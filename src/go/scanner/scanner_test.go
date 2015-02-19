@@ -178,6 +178,7 @@ var tokens = [...]elt{
 	{token.SWITCH, "switch", keyword},
 	{token.TYPE, "type", keyword},
 	{token.VAR, "var", keyword},
+	{token.SELECTP, "selectp", keyword},
 }
 
 const whitespace = "  \t  \n\n\n" // to separate tokens
@@ -440,6 +441,7 @@ var lines = []string{
 	"switch\n",
 	"type\n",
 	"var\n",
+	"selectp\n",
 
 	"foo$//comment\n",
 	"foo$//comment",

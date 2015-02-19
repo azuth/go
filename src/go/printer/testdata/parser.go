@@ -1734,6 +1734,24 @@ func (p *parser) parseSelectStmt() *ast.SelectStmt {
 	return &ast.SelectStmt{pos, body}
 }
 
+func (p *parser) parseSelectPStmt() *ast.SelectStmt {
+	if p.trace {
+		defer un(trace(p, "SelectPStmt"))
+	}
+
+	pos := p.expect(token.SELECTP)
+	lbrace := p.expect(token.LBRACE)
+	var list []ast.Stmt
+	for p.tok == token.CASE || p.tok == token.DEFAULT {
+		list = append(list, p.parseCommClause())
+	}
+	rbrace := p.expect(token.RBRACE)
+	p.expectSemi()
+	body := &ast.BlockStmt{lbrace, list, rbrace}
+
+	return &ast.SelectPStmt{pos, body}
+}
+
 func (p *parser) parseForStmt() ast.Stmt {
 	if p.trace {
 		defer un(trace(p, "ForStmt"))
@@ -1840,6 +1858,8 @@ func (p *parser) parseStmt() (s ast.Stmt) {
 		s = p.parseSwitchStmt()
 	case token.SELECT:
 		s = p.parseSelectStmt()
+	case token.SELECTP:
+		s = p.parseSelectPStmt()
 	case token.FOR:
 		s = p.parseForStmt()
 	case token.SEMICOLON:

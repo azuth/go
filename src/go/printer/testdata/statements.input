@@ -222,6 +222,17 @@ func _() {
 	select { case <-c: }
 }
 
+// Formatting of selected selectp statements.
+func _() {
+	selectp {
+	}
+	selectp { /* this comment should not be tab-aligned because the closing } is on the same line */ }
+	selectp { /* this comment should be tab-aligned */
+	}
+	selectp { // this comment should be tab-aligned
+	}
+	selectp { case <-c: }
+}
 
 // Formatting of for-statement headers for single-line for-loops.
 func _() {

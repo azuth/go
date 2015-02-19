@@ -687,6 +687,12 @@ type (
 		Body   *BlockStmt // CommClauses only
 	}
 
+	// A SelectPStmt node represents a select statement with priority.
+	SelectPStmt struct {
+		SelectP token.Pos  // position of "selectp" keyword
+		Body    *BlockStmt // CommClauses only
+	}
+
 	// A ForStmt represents a for statement.
 	ForStmt struct {
 		For  token.Pos // position of "for" keyword
@@ -728,6 +734,7 @@ func (s *SwitchStmt) Pos() token.Pos     { return s.Switch }
 func (s *TypeSwitchStmt) Pos() token.Pos { return s.Switch }
 func (s *CommClause) Pos() token.Pos     { return s.Case }
 func (s *SelectStmt) Pos() token.Pos     { return s.Select }
+func (s *SelectPStmt) Pos() token.Pos    { return s.SelectP }
 func (s *ForStmt) Pos() token.Pos        { return s.For }
 func (s *RangeStmt) Pos() token.Pos      { return s.For }
 
@@ -778,9 +785,10 @@ func (s *CommClause) End() token.Pos {
 	}
 	return s.Colon + 1
 }
-func (s *SelectStmt) End() token.Pos { return s.Body.End() }
-func (s *ForStmt) End() token.Pos    { return s.Body.End() }
-func (s *RangeStmt) End() token.Pos  { return s.Body.End() }
+func (s *SelectStmt) End() token.Pos  { return s.Body.End() }
+func (s *SelectPStmt) End() token.Pos { return s.Body.End() }
+func (s *ForStmt) End() token.Pos     { return s.Body.End() }
+func (s *RangeStmt) End() token.Pos   { return s.Body.End() }
 
 // stmtNode() ensures that only statement nodes can be
 // assigned to a StmtNode.
@@ -804,6 +812,7 @@ func (*SwitchStmt) stmtNode()     {}
 func (*TypeSwitchStmt) stmtNode() {}
 func (*CommClause) stmtNode()     {}
 func (*SelectStmt) stmtNode()     {}
+func (*SelectPStmt) stmtNode()    {}
 func (*ForStmt) stmtNode()        {}
 func (*RangeStmt) stmtNode()      {}
 

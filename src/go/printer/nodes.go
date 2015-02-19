@@ -1213,6 +1213,16 @@ func (p *printer) stmt(stmt ast.Stmt, nextIsRBrace bool) {
 			p.block(body, 0)
 		}
 
+	case *ast.SelectPStmt:
+		p.print(token.SELECTP, blank)
+		body := s.Body
+		if len(body.List) == 0 && !p.commentBefore(p.posFor(body.Rbrace)) {
+			// print empty select statement w/o comments on one line
+			p.print(body.Lbrace, token.LBRACE, body.Rbrace, token.RBRACE)
+		} else {
+			p.block(body, 0)
+		}
+
 	case *ast.ForStmt:
 		p.print(token.FOR)
 		p.controlClause(true, s.Init, s.Cond, s.Post)

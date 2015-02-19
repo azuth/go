@@ -438,8 +438,8 @@ func syncStmt(p *parser) {
 		switch p.tok {
 		case token.BREAK, token.CONST, token.CONTINUE, token.DEFER,
 			token.FALLTHROUGH, token.FOR, token.GO, token.GOTO,
-			token.IF, token.RETURN, token.SELECT, token.SWITCH,
-			token.TYPE, token.VAR:
+			token.IF, token.RETURN, token.SELECT, token.SELECTP,
+			token.SWITCH, token.TYPE, token.VAR:
 			// Return only if parser made some progress since last
 			// sync or if it has not reached 10 sync calls without
 			// progress. Otherwise consume at least one token to
@@ -2029,6 +2029,25 @@ func (p *parser) parseSelectStmt() *ast.SelectStmt {
 	return &ast.SelectStmt{Select: pos, Body: body}
 }
 
+func (p *parser) parseSelectPStmt() *ast.SelectPStmt {
+	if p.trace {
+		defer un(trace(p, "SelectPStmt"))
+	}
+
+	pos := p.expect(token.SELECTP)
+	lbrace := p.expect(token.LBRACE)
+	var list []ast.Stmt
+	for p.tok == token.CASE || p.tok == token.DEFAULT {
+		list = append(list, p.parseCommClause())
+	}
+	rbrace := p.expect(token.RBRACE)
+	p.expectSemi()
+	body := &ast.BlockStmt{Lbrace: lbrace, List: list,
+		Rbrace: rbrace}
+
+	return &ast.SelectPStmt{SelectP: pos, Body: body}
+}
+
 func (p *parser) parseForStmt() ast.Stmt {
 	if p.trace {
 		defer un(trace(p, "ForStmt"))
@@ -2149,6 +2168,8 @@ func (p *parser) parseStmt() (s ast.Stmt) {
 		s = p.parseSwitchStmt()
 	case token.SELECT:
 		s = p.parseSelectStmt()
+	case token.SELECTP:
+		s = p.parseSelectPStmt()
 	case token.FOR:
 		s = p.parseForStmt()
 	case token.SEMICOLON:
